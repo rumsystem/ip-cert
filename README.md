@@ -4,6 +4,28 @@ Get SSL certificate from ZeroSSL for an IP address.
 
 ## Usage
 
+### Help
+
+```
+go run main.go
+```
+
+```
+Currently get a SSL Certificate from ZeroSSL
+
+Usage:
+  ip-cert [command]
+
+Available Commands:
+  check       Check SSL Certificate
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  issue       Issue Certificate for an IP Address
+
+Flags:
+  -h, --help   help for ip-cert
+```
+
 ### issue ssl certificate
 
 ```
