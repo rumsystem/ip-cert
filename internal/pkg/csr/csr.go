@@ -14,7 +14,6 @@ import (
 )
 
 const (
-	PrivateKeyFilename  = "private.key"
 	PrivateKeyBlockType = "EC PRIVATE KEY"
 	CSRBlockType        = "CERTIFICATE REQUEST"
 )
@@ -25,22 +24,18 @@ func newPrivateKey() (*ecdsa.PrivateKey, error) {
 	return ecdsa.GenerateKey(curve, rand.Reader)
 }
 
-func getPrivateKeyPath(baseDir, domain string) string {
-	return filepath.Join(baseDir, domain, PrivateKeyFilename)
-}
-
 func savePrivateKey(baseDir, domain string, privKey *ecdsa.PrivateKey) error {
 	privKeyBytes, err := x509.MarshalECPrivateKey(privKey)
 	if err != nil {
 		return err
 	}
 	privKeyPemBytes := pem.EncodeToMemory(&pem.Block{Type: PrivateKeyBlockType, Bytes: privKeyBytes})
-	path := getPrivateKeyPath(baseDir, domain)
+	path := utils.GetPrivateKeyPath(baseDir, domain)
 	return utils.SaveFile(path, privKeyPemBytes)
 }
 
 func loadPrivateKeyFromFile(baseDir, domain string) (*ecdsa.PrivateKey, error) {
-	path := getPrivateKeyPath(baseDir, domain)
+	path := utils.GetPrivateKeyPath(baseDir, domain)
 	raw, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err

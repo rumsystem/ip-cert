@@ -1,7 +1,3 @@
-/*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
-
-*/
 package cmd
 
 import (
@@ -12,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/grantae/certinfo"
-	"github.com/spf13/cobra"
 	"github.com/rumsystem/ip-cert/internal/pkg/utils"
+	"github.com/spf13/cobra"
 )
 
 var (
