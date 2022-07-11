@@ -3,7 +3,7 @@ package cmd
 import (
 	"os"
 
-	"github.com/rumsystem/ip-cert/internal/pkg/log"
+	"github.com/rumsystem/ip-cert/pkg/log"
 	"github.com/spf13/cobra"
 )
 

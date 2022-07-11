@@ -79,14 +79,19 @@ type (
 		Success int `json:"success"`
 	}
 
-	ErrorResult struct {
+	ErrorInfo struct {
 		Code int    `json:"code"`
 		Type string `json:"type"`
 	}
 
+	ErrorResult struct {
+		Success bool       `json:"success"`
+		Error   *ErrorInfo `json:"error"`
+	}
+
 	ValidateCSRResult struct {
-		Valid bool         `json:"valid"`
-		Error *ErrorResult `json:"error"`
+		Valid bool       `json:"valid"`
+		Error *ErrorInfo `json:"error"`
 	}
 )
 

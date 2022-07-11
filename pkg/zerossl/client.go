@@ -9,7 +9,6 @@ import (
 
 	"github.com/go-playground/form/v4"
 	"github.com/google/go-querystring/query"
-	"github.com/rumsystem/ip-cert/internal/pkg/utils"
 )
 
 const ApiEndpoint = "api.zerossl.com"
@@ -42,7 +41,7 @@ func (c *Client) CreateCert(payload CreateCertParams) (*GetCertResult, error) {
 	}
 	body := values.Encode()
 
-	_, resp, err := utils.Request(url, "POST", body, nil)
+	_, resp, err := Request(url, "POST", body, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +56,7 @@ func (c *Client) CreateCert(payload CreateCertParams) (*GetCertResult, error) {
 
 func (c *Client) GetCert(id string) (*GetCertResult, error) {
 	url := c.GetURL(fmt.Sprintf("certificates/%s", id), nil)
-	_, resp, err := utils.Request(url, "GET", "", nil)
+	_, resp, err := Request(url, "GET", "", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +76,7 @@ func (c *Client) ListCert(params ListCertParams) (*ListCertResult, error) {
 	}
 	url := c.GetURL("/certificates", q)
 
-	_, resp, err := utils.Request(url, "GET", "", nil)
+	_, resp, err := Request(url, "GET", "", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -103,7 +102,7 @@ func (c *Client) VerifyDomains(id string, method ValidationMethod, emails []stri
 		}
 	}
 
-	_, resp, err := utils.Request(_url, "POST", values.Encode(), nil)
+	_, resp, err := Request(_url, "POST", values.Encode(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +117,7 @@ func (c *Client) VerifyDomains(id string, method ValidationMethod, emails []stri
 
 func (c *Client) VerifyStatus(id string) (*VerifyStatusResult, error) {
 	url := c.GetURL(fmt.Sprintf("certificates/%s/status", id), nil)
-	_, resp, err := utils.Request(url, "GET", "", nil)
+	_, resp, err := Request(url, "GET", "", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +131,7 @@ func (c *Client) VerifyStatus(id string) (*VerifyStatusResult, error) {
 
 func (c *Client) DownloadCertInline(id string) (*CertificateInlineResult, error) {
 	url := c.GetURL(fmt.Sprintf("certificates/%s/download/return", id), nil)
-	_, resp, err := utils.Request(url, "GET", "", nil)
+	_, resp, err := Request(url, "GET", "", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -147,7 +146,7 @@ func (c *Client) DownloadCertInline(id string) (*CertificateInlineResult, error)
 
 func (c *Client) RevokeCert(id string) (bool, error) {
 	url := c.GetURL(fmt.Sprintf("certificates/%s/revoke", id), nil)
-	_, resp, err := utils.Request(url, "POST", "", nil)
+	_, resp, err := Request(url, "POST", "", nil)
 	if err != nil {
 		return false, err
 	}
@@ -165,7 +164,7 @@ func (c *Client) RevokeCert(id string) (bool, error) {
 
 func (c *Client) CancelCert(id string) (bool, error) {
 	url := c.GetURL(fmt.Sprintf("certificates/%s/cancel", id), nil)
-	_, resp, err := utils.Request(url, "POST", "", nil)
+	_, resp, err := Request(url, "POST", "", nil)
 	if err != nil {
 		return false, err
 	}
@@ -183,7 +182,7 @@ func (c *Client) CancelCert(id string) (bool, error) {
 
 func (c *Client) DeleteCert(id string) (bool, error) {
 	url := c.GetURL(fmt.Sprintf("certificates/%s", id), nil)
-	_, resp, err := utils.Request(url, "DELETE", "", nil)
+	_, resp, err := Request(url, "DELETE", "", nil)
 	if err != nil {
 		return false, err
 	}
@@ -206,7 +205,7 @@ func (c *Client) ValidateCSR(csr string) (bool, error) {
 	values.Add("csr", csr)
 	body := values.Encode()
 
-	_, resp, err := utils.Request(_url, "POST", body, nil)
+	_, resp, err := Request(_url, "POST", body, nil)
 	if err != nil {
 		return false, err
 	}

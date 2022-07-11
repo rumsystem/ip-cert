@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/rumsystem/ip-cert/internal/pkg/log"
+	"github.com/rumsystem/ip-cert/pkg/log"
 )
 
 var logger = log.GetLogger()
@@ -68,15 +68,12 @@ func Request(url string, method string, body string, headers map[string]string) 
 		return 0, nil, err
 	}
 	defer resp.Body.Close()
+
 	content, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return 0, nil, err
 	}
 	logger.Debugf("response: status: %d body: %s", resp.StatusCode, content)
-
-	if resp.StatusCode >= 400 {
-		return resp.StatusCode, content, fmt.Errorf("ZeroSSL response status code: %d, body: %s", resp.StatusCode, content)
-	}
 
 	return resp.StatusCode, content, nil
 }

@@ -1,7 +1,9 @@
 package cmd
 
 import (
-	"github.com/rumsystem/ip-cert/internal/pkg/zerossl"
+	"net"
+
+	"github.com/rumsystem/ip-cert/pkg/zerossl"
 	"github.com/spf13/cobra"
 )
 
@@ -16,7 +18,8 @@ var issueCmd = &cobra.Command{
 	Use:   "issue",
 	Short: "Issue Certificate for an IP Address",
 	Run: func(cmd *cobra.Command, args []string) {
-		_, _, err := zerossl.IssueIPCert(certDir, ip, accessKey)
+		_ip := net.ParseIP(ip)
+		_, _, err := zerossl.IssueIPCert(certDir, _ip, accessKey)
 		if err != nil {
 			logger.Fatal(err)
 		}

@@ -1,23 +1,36 @@
 package zerossl
 
 import (
+	"errors"
+	"net"
 	"net/url"
 	"runtime"
 	"strings"
 	"time"
 
-	"github.com/rumsystem/ip-cert/internal/pkg/csr"
-	"github.com/rumsystem/ip-cert/internal/pkg/utils"
+	"github.com/rumsystem/ip-cert/pkg/csr"
+	"github.com/rumsystem/ip-cert/pkg/utils"
 )
 
 // IssueIPCert issue SSL Certificate from ZeroSSL for an ip address, return private key path, certificate path and error
-func IssueIPCert(_certDir string, _ip string, _accessKey string) (string, string, error) {
+func IssueIPCert(_certDir string, _ip net.IP, _accessKey string) (string, string, error) {
+	if _certDir == "" {
+		return "", "", errors.New("certificate directory is null")
+	}
+	if _ip == nil {
+		return "", "", errors.New("invalid ip address")
+	}
+	if _accessKey == "" {
+		return "", "", errors.New("you should get ZeroSSL access key from: https://app.zerossl.com/developer")
+	}
+
+	ipStr := _ip.String()
 	client := Client{
 		AccessKey: _accessKey,
 	}
 
-	privKeyPath := utils.GetPrivateKeyPath(_certDir, _ip)
-	certPath := utils.GetCertPath(_certDir, _ip)
+	privKeyPath := utils.GetPrivateKeyPath(_certDir, ipStr)
+	certPath := utils.GetCertPath(_certDir, ipStr)
 	if utils.FileExist(privKeyPath) && utils.FileExist(certPath) {
 		isExp, err := utils.IsCertExpired(certPath, privKeyPath)
 		if err != nil {
@@ -28,12 +41,12 @@ func IssueIPCert(_certDir string, _ip string, _accessKey string) (string, string
 		}
 	}
 
-	privKey, err := csr.LoadOrCreatePrivateKey(_certDir, _ip)
+	privKey, err := csr.LoadOrCreatePrivateKey(_certDir, _ip.String())
 	if err != nil {
 		return "", "", nil
 	}
 
-	csrStr, err := csr.NewCSRStr(_ip, privKey)
+	csrStr, err := csr.NewCSRStr(_ip.String(), privKey)
 	if err != nil {
 		return "", "", nil
 	}
@@ -41,12 +54,16 @@ func IssueIPCert(_certDir string, _ip string, _accessKey string) (string, string
 	logger.Debugf("csr string: %s\n", csrStr)
 
 	// create cert
-	createParams := NewCreateCertParams([]string{_ip}, csrStr, 90, false)
+	createParams := NewCreateCertParams([]string{_ip.String()}, csrStr, 90, false)
 	certInfo, err := client.CreateCert(*createParams)
 	if err != nil {
-		return "", "", nil
+		return "", "", err
 	}
 	logger.Debugf("certInfo: %+v\n", certInfo)
+	if len(certInfo.Validation.OtherMethods) == 0 {
+		logger.Debug("request certificate failed")
+		return "", "", err
+	}
 
 	// prepare verify
 	pathContents := make(map[string]string)
@@ -96,7 +113,7 @@ func IssueIPCert(_certDir string, _ip string, _accessKey string) (string, string
 	if err != nil {
 		return "", "", nil
 	}
-	caBundlePath := utils.GetCABundlePath(_certDir, _ip)
+	caBundlePath := utils.GetCABundlePath(_certDir, ipStr)
 	if err := utils.SaveFile(caBundlePath, []byte(cert.CABundle)); err != nil {
 		return "", "", nil
 	}

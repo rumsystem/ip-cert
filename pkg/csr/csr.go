@@ -10,7 +10,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"github.com/rumsystem/ip-cert/internal/pkg/utils"
+	"github.com/rumsystem/ip-cert/pkg/utils"
 )
 
 const (

@@ -6,15 +6,15 @@ import (
 	"path/filepath"
 )
 
-func GetPrivateKeyPath(_certDir, _ip string) string {
+func GetPrivateKeyPath(_certDir string, _ip string) string {
 	return filepath.Join(_certDir, _ip, "private.key")
 }
 
-func GetCABundlePath(_certDir, _ip string) string {
+func GetCABundlePath(_certDir string, _ip string) string {
 	return filepath.Join(_certDir, _ip, "ca_bundle.crt")
 }
 
-func GetCertPath(_certDir, _ip string) string {
+func GetCertPath(_certDir string, _ip string) string {
 	return filepath.Join(_certDir, _ip, "certificate.crt")
 }
 
