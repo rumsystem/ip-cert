@@ -3,7 +3,6 @@ package zerossl
 import (
 	"context"
 	"fmt"
-	"net"
 	"net/http"
 
 	"github.com/rumsystem/ip-cert/pkg/log"
@@ -30,13 +29,7 @@ func StartVerifyServer(pathContents map[string]string) error {
 	})
 
 	go func() {
-		// NOTE: only listen ipv4
-		ln, err := net.Listen("tcp4", s.Addr)
-		if err != nil {
-			logger.Errorf("net.Listen failed: %s", err)
-			return
-		}
-		if err := s.Serve(ln); err != nil && err != http.ErrServerClosed {
+		if err := s.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logger.Fatal(err)
 		}
 	}()

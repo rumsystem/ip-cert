@@ -43,12 +43,12 @@ func IssueIPCert(_certDir string, _ip net.IP, _accessKey string) (string, string
 
 	privKey, err := csr.LoadOrCreatePrivateKey(_certDir, _ip.String())
 	if err != nil {
-		return "", "", nil
+		return "", "", err
 	}
 
 	csrStr, err := csr.NewCSRStr(_ip.String(), privKey)
 	if err != nil {
-		return "", "", nil
+		return "", "", err
 	}
 
 	logger.Debugf("csr string: %s\n", csrStr)
@@ -70,7 +70,7 @@ func IssueIPCert(_certDir string, _ip net.IP, _accessKey string) (string, string
 	for _, v := range certInfo.Validation.OtherMethods {
 		_url, err := url.Parse(v.FileValidationUrlHttp)
 		if err != nil {
-			return "", "", nil
+			return "", "", err
 		}
 		var content string
 		if runtime.GOOS == "windows" {
@@ -91,14 +91,14 @@ func IssueIPCert(_certDir string, _ip net.IP, _accessKey string) (string, string
 
 	// notify verify
 	if _, err := client.VerifyDomains(certInfo.ID, HttpCSRHash, nil); err != nil {
-		return "", "", nil
+		return "", "", err
 	}
 
 	// check cert status
 	for {
 		info, err := client.GetCert(certInfo.ID)
 		if err != nil {
-			return "", "", nil
+			return "", "", err
 		}
 
 		if info.Status == "issued" {
@@ -111,14 +111,15 @@ func IssueIPCert(_certDir string, _ip net.IP, _accessKey string) (string, string
 	// download cert
 	cert, err := client.DownloadCertInline(certInfo.ID)
 	if err != nil {
-		return "", "", nil
+		return "", "", err
 	}
 	caBundlePath := utils.GetCABundlePath(_certDir, ipStr)
 	if err := utils.SaveFile(caBundlePath, []byte(cert.CABundle)); err != nil {
-		return "", "", nil
+		return "", "", err
 	}
-	if err := utils.SaveFile(certPath, []byte(cert.Certificate)); err != nil {
-		return "", "", nil
+	// save certificate and ca bundle to cert file
+	if err := utils.SaveFile(certPath, []byte(cert.Certificate+cert.CABundle)); err != nil {
+		return "", "", err
 	}
 
 	logger.Infof("saved private key: %s certificate: %s ca bundle: %s", privKeyPath, certPath, caBundlePath)
