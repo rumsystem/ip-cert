@@ -40,10 +40,10 @@ func IsCertExpired(certPath, keyPath string) (bool, error) {
 
 	now := time.Now()
 	if now.After(c.NotAfter) {
-		return false, errors.New("Certificate expired")
+		return true, errors.New("Certificate expired")
 	} else if now.Before(c.NotBefore) {
-		return false, errors.New("Certificate not valid yet")
+		return true, errors.New("Certificate not valid yet")
 	}
 
-	return true, nil
+	return false, nil
 }
