@@ -123,5 +123,11 @@ func IssueIPCert(_certDir string, _ip net.IP, _accessKey string) (string, string
 	}
 
 	logger.Infof("saved private key: %s certificate: %s ca bundle: %s", privKeyPath, certPath, caBundlePath)
+
+	// stop verify server
+	if err := StopVerifyServer(); err != nil {
+		logger.Errorf("stop verify server failed: %s", err)
+	}
+
 	return privKeyPath, certPath, nil
 }
